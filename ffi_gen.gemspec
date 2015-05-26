@@ -11,6 +11,6 @@ Gem::Specification.new do |s|
   s.license = "MIT"
 
   s.add_dependency "ffi", "~> 1.0"
-  s.files = Dir["lib/**/*.rb"] + ["LICENSE", "README.md", "lib/ffi_gen/empty.h", "lib/ffi_gen/java_pre.java"]
+  s.files = Dir["lib/**/*.rb"] + ["LICENSE", "README.md", "lib/ffi_gen/empty.h", "lib/ffi_gen/java_pre.java", "lib/ffi_gen/java_enum.java"]
   s.require_path = "lib"
 end

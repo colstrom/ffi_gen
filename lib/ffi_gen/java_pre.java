@@ -11,10 +11,6 @@ class NativeNameAnnotationFunctionMapper implements FunctionMapper {
     }
 }
 
-interface NativeEnum {
-    public int toNativeInt();
-}
-
 class EnumConverter implements TypeConverter {
     public Class<?> nativeType() {
         return Integer.class;
