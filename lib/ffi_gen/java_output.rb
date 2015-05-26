@@ -183,8 +183,6 @@ class FFIGen
         call = "INSTANCE.#{java_name}(#{args});"
         if @return_type.respond_to? :no_return and @return_type.no_return
           writer.puts call
-        elsif @return_type.is_a? StructOrUnion
-          writer.puts "return (#{@return_type.java_jna_type})#{call}"
         else
           writer.puts "return #{call}"
         end
