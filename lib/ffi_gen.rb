@@ -371,6 +371,7 @@ class FFIGen
       next_constant_value = 0
       Clang.get_children(declaration_cursor).each do |enum_constant|
         constant_name = read_name enum_constant
+        next if constant_name.nil?
 
         constant_location = Clang.get_cursor_location enum_constant
         constant_comment_range = Clang.get_range previous_constant_location, constant_location
@@ -447,6 +448,7 @@ class FFIGen
           last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
           struct.fields << { name: field_name, type: field_type, comment: field_comment }
+        when :unexposed_attr
         else
           raise
         end
