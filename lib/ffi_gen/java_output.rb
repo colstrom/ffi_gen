@@ -103,14 +103,14 @@ class FFIGen
       writer.puts "public static class #{java_name} extends #{@is_union ? 'Union' : (@fields.empty? ? 'PointerType' : 'Structure')} {"
       writer.indent do
         @fields.each do |field|
-          writer.puts "public #{field[:type].java_jna_type} #{field[:symbol]};"
+          writer.puts "public #{field[:type].java_jna_type} #{field[:name].raw};"
         end
         writer.puts "// hidden structure" if @fields.empty?
       end
       writer.indent do
         writer.puts "protected List<String> getFieldOrder() {"
         writer.indent do
-          fs = @fields.map{|f| '"' + f[:symbol] + '"'}.join(", ")
+          fs = @fields.map{|f| '"' + f[:name].raw + '"'}.join(", ")
           writer.puts "return Arrays.asList(new String[] { #{fs} } );"
         end
         writer.puts "}"
