@@ -256,6 +256,10 @@ class FFIGen
       when :double          then "double"
       end
     end
+
+    def no_return
+      @clang_type == :void
+    end
   end
   
   class StringType
