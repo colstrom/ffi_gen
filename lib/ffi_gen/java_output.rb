@@ -107,6 +107,14 @@ class FFIGen
         end
         writer.puts "// hidden structure" if @fields.empty?
       end
+      writer.indent do
+        writer.puts "protected List<String> getFieldOrder() {"
+        writer.indent do
+          fs = @fields.map{|f| '"' + f[:symbol] + '"'}.join(", ")
+          writer.puts "return Arrays.asList(new String[] { #{fs} } );"
+        end
+        writer.puts "}"
+      end
       writer.puts "}", ""
       
       @written = true
