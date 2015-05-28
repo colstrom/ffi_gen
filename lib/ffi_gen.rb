@@ -693,7 +693,7 @@ class FFIGen
     when :unexposed, :function_proto
       UnknownType.new
     when :incomplete_array
-      PointerType.new resolve_type(Clang.get_array_element_type(canonical_type)).name, 1
+      ArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), nil
     else
       raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
     end

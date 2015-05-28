@@ -303,7 +303,7 @@ class FFIGen
     
     def java_jna_type
       if @constant_size
-        raise
+        "#{@element_type.java_jna_type}[#{@constant_size}]"
       else
         "#{@element_type.java_jna_type}[]"
       end
