@@ -172,7 +172,7 @@ class FFIGen
         if lp && lp[:type].is_a?(PointerType) && lp[:type].pointee_type.clang_type == :u_char && p[:type].clang_type == :u_long
           n = lp[:name].to_java_downcase
           replace[n] = "bytesToPointer(#{n})"
-          replace[p[:name].to_java_downcase] = "#{n}.length";
+          replace[p[:name].to_java_downcase] = "new NativeLong(#{n}.length)";
           d = lp.dup
           d[:type] = ArrayType.new(lp[:type].pointee_type, nil)
           parameters << d
