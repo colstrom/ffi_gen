@@ -230,9 +230,10 @@ class FFIGen
   end
 
   class PointerType < Type
-    attr_reader :pointee_name, :depth
+    attr_reader :pointee_type, :pointee_name, :depth
 
-    def initialize(pointee_name, depth)
+    def initialize(pointee_type, pointee_name, depth)
+      @pointee_type = pointee_type
       @pointee_name = pointee_name
       @depth = depth
     end
@@ -677,7 +678,8 @@ class FFIGen
               break
             end
           end
-          type = PointerType.new pointee_name, pointer_depth
+          pointee_type = resolve_type current_type
+          type = PointerType.new pointee_type, pointee_name, pointer_depth
         end
 
         type
