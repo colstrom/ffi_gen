@@ -512,7 +512,19 @@ class FFIGen
 
     when :typedef_decl
       typedef_children = Clang.get_children declaration_cursor
-      if typedef_children.size == 1
+      underlying = Clang.get_typedef_decl_underlying_type(declaration_cursor)
+      function_proto = Clang.get_canonical_type(Clang.get_pointee_type(underlying))
+      if function_proto[:kind] == :function_proto
+        return_type = resolve_type Clang.get_result_type(function_proto)
+        parameters = []
+        Clang.get_num_arg_types(function_proto).times do |i|
+          param_type = resolve_type Clang.get_arg_type(function_proto, i)
+          # XXX: TODO: get arg name, somehow
+          param_name = Name.new ['arg', i.to_s]
+          parameters << { name:param_name, type: param_type, description: [] }
+        end
+        FunctionOrCallback.new self, name, parameters, return_type, true, false, comment, []
+      elsif typedef_children.size == 1
         child_declaration = @declarations_by_type[Clang.get_cursor_type(typedef_children.first)]
         child_declaration.name = name if child_declaration and child_declaration.name.nil?
         nil
@@ -678,7 +690,7 @@ class FFIGen
               break
             end
           end
-          pointee_type = resolve_type current_type
+          pointee_type = resolve_type pointee_type
           type = PointerType.new pointee_type, pointee_name, pointer_depth
         end
 

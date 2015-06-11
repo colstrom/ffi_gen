@@ -152,11 +152,13 @@ class FFIGen
   
   class FunctionOrCallback
     def write_java(writer)
-      return if @is_callback # not yet supported
-      
       jna_signature = "#{@parameters.map{ |parameter| "#{parameter[:type].java_jna_type} #{parameter[:name].to_java_downcase}" }.join(', ')}"
       if @is_callback
-        writer.puts "callback :#{java_name}, #{jna_signature}", ""
+        writer.puts "public static interface #{java_name} extends Callback {"
+        writer.indent do
+          writer.puts "#{@return_type.java_jna_type} invoke(#{jna_signature});"
+        end
+        writer.puts "}"
       else
         writer.puts "@NativeName(\"#{@name.raw}\")", "#{@return_type.java_jna_type} #{java_name}(#{jna_signature});", ""
       end
@@ -169,7 +171,7 @@ class FFIGen
       parameters = []
       lp = nil
       @parameters.each do |p|
-        if lp && lp[:type].is_a?(PointerType) && lp[:type].pointee_type.clang_type == :u_char && p[:type].clang_type == :u_long
+        if lp && lp[:type].is_a?(PointerType) && lp[:type].pointee_type.respond_to?(:clang_type) && lp[:type].pointee_type.clang_type == :u_char && p[:type].clang_type == :u_long
           n = lp[:name].to_java_downcase
           replace[n] = "bytesToPointer(#{n})"
           replace[p[:name].to_java_downcase] = "new NativeLong(#{n}.length)";
