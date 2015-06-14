@@ -704,7 +704,7 @@ class FFIGen
       @declarations_by_type[canonical_type] || UnknownType.new # TODO
     when :constant_array
       ArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), Clang.get_array_size(canonical_type)
-    when :unexposed, :function_proto
+    when :unexposed, :function_proto, :function_no_proto
       UnknownType.new
     when :incomplete_array
       ArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), nil
