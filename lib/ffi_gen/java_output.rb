@@ -152,15 +152,8 @@ class FFIGen
   
   class FunctionOrCallback
     def write_java(writer)
-      return if @is_callback # static only
-
-      jna_signature = "#{@parameters.map{ |parameter| "#{parameter[:type].java_jna_type} #{parameter[:name].to_java_downcase}" }.join(', ')}"
-      writer.puts "@NativeName(\"#{@name.raw}\")", "#{@return_type.java_jna_type} #{java_name}(#{jna_signature});", ""
-    end
-    
-    def write_static_java(writer)
       if @is_callback
-        writer.puts "public static interface #{java_name} extends Callback {"
+        writer.puts "public static interface #{java_name.split('.').last} extends Callback {"
         writer.indent do
           jna_signature = "#{@parameters.map{ |parameter| "#{parameter[:type].java_jna_type} #{parameter[:name].to_java_downcase}" }.join(', ')}"
           writer.puts "#{@return_type.java_jna_type} invoke(#{jna_signature});"
@@ -168,6 +161,13 @@ class FFIGen
         writer.puts "}", ""
         return
       end
+
+      jna_signature = "#{@parameters.map{ |parameter| "#{parameter[:type].java_jna_type} #{parameter[:name].to_java_downcase}" }.join(', ')}"
+      writer.puts "@NativeName(\"#{@name.raw}\")", "#{@return_type.java_jna_type} #{java_name}(#{jna_signature});", ""
+    end
+    
+    def write_static_java(writer)
+      return if @is_callback # must be in Library
       
       replace = {}
       parameters = []
@@ -221,7 +221,8 @@ class FFIGen
     end
     
     def java_name
-      @java_name ||= @name.to_java_downcase
+      n = (@is_callback ? (@generator.module_name + 'Interface.') : '') + @name.to_java_downcase
+      @java_name ||= n
     end
     
     def java_jna_type
