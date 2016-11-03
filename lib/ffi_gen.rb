@@ -260,7 +260,7 @@ class FFIGen
     end
   end
 
-  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags, :package
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
@@ -272,6 +272,7 @@ class FFIGen
     @blocking      = options.fetch :blocking, []
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
+    @package       = options[:package] or options[:module_name]
 
     @translation_unit = nil
     @declarations = nil
@@ -405,8 +406,12 @@ class FFIGen
             next_constant_value
           end
 
-          constants << { name: constant_name, value: constant_value, comment: constant_description }
-          next_constant_value = constant_value + 1
+          if constant_value.nil?
+              puts "Warning: Could not process constant_value.nil of enum constant \"#{constant_name.raw}\""
+            else
+              constants << { name: constant_name, value: constant_value, comment: constant_description }
+              next_constant_value = constant_value + 1
+            end
         rescue ArgumentError
           puts "Warning: Could not process value of enum constant \"#{constant_name.raw}\""
         end
