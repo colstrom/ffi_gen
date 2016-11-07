@@ -104,6 +104,10 @@ class FFIGen
     def java_jna_type
       java_name
     end
+
+    def java_jnr_struct_type
+      java_jna_type
+    end
     
     def java_description
       "Symbol from _enum_#{java_name}_"
@@ -126,7 +130,7 @@ class FFIGen
       writer.puts "public static final class #{java_name} extends #{@is_union ? 'Union' : (@fields.empty? ? 'Struct' : 'Struct')} {"
       writer.indent do
         @fields.each do |field|
-          writer.puts "public #{field[:type].java_jna_type} #{field[:name].raw};"
+          writer.puts "public #{field[:type].java_jnr_struct_type} #{field[:name].raw};"
         end
         writer.puts "// hidden structure" if @fields.empty?
       end
@@ -140,7 +144,7 @@ class FFIGen
       #end
       writer.indent do
         writer.puts "public #{java_name}() {"
-        writer.puts "  super(RUNTIME);"
+        writer.puts "  this(RUNTIME);"
         writer.puts "}"
       end
       writer.indent do
@@ -159,6 +163,10 @@ class FFIGen
     
     def java_jna_type
       @written ? java_name : "Pointer"
+    end
+
+    def java_jnr_struct_type
+      java_jna_type
     end
     
     def java_description
@@ -244,6 +252,10 @@ class FFIGen
     def java_jna_type
       java_name
     end
+
+    def java_jnr_struct_type
+      java_jna_type
+    end
     
     def java_description
       "Proc(_callback_#{java_name}_)"
@@ -305,8 +317,27 @@ class FFIGen
       when :double          then "double"
       end
     end
+
+    def java_jnr_struct_type
+      case @clang_type
+      when :void            then "void"
+      when :bool            then "Boolean"
+      when :u_char          then "Unsigned8"
+      when :u_short         then "Unsigned16"
+      when :u_int           then "Unsigned32"
+      when :u_long          then "UnsignedLong"
+      when :u_long_long     then "UnsignedLong"
+      when :char_s, :s_char then "Signed8"
+      when :short           then "Signed16"
+      when :int             then "Signed32"
+      when :long            then "SignedLong"
+      when :long_long       then "SignedLong"
+      when :float           then "Float"
+      when :double          then "Double"
+      end
+    end
   end
-  
+
   class StringType
     def java_name
       "String"
@@ -314,6 +345,10 @@ class FFIGen
     
     def java_jna_type
       "String"
+    end
+
+    def java_jnr_struct_type
+      java_jna_type
     end
   end
   
@@ -325,6 +360,10 @@ class FFIGen
     def java_jna_type
       @inner_type.java_jna_type
     end
+
+    def java_jnr_struct_type
+      java_jna_type
+    end
   end
   
   class PointerType
@@ -334,6 +373,10 @@ class FFIGen
     
     def java_jna_type
       "Pointer"
+    end
+
+    def java_jnr_struct_type
+      java_jna_type
     end
     
     def java_description
@@ -353,6 +396,10 @@ class FFIGen
         "#{@element_type.java_jna_type}[]"
       end
     end
+
+    def java_jnr_struct_type
+      java_jna_type
+    end
     
     def java_description
       "Array of #{@element_type.java_description}"
@@ -366,6 +413,10 @@ class FFIGen
 
     def java_jna_type
       "byte"
+    end
+
+    def java_jnr_struct_type
+      java_jna_type
     end
   end
 end
