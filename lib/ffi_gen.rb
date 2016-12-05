@@ -676,8 +676,12 @@ class FFIGen
             Clang.get_num_arg_types(function_proto).times do |i|
               param_type = resolve_type Clang.get_arg_type(function_proto, i)
               #param_name = read_name(Clang.cursor_get_argument(function_proto, i))
-              param_name = param_type.name
-              param_name ||= Name.new ['arg', i.to_s]
+              if i > 0
+                param_name = Name.new [param_type.name.parts.last, i.to_s]
+              else
+                param_name = Name.new [param_type.name.parts.last]
+              end
+              #param_name ||= Name.new ['arg', i.to_s]
               parameters << { name:param_name, type: param_type, description: [] }
             end
             return FunctionOrCallback.new self, field_name, parameters, return_type, true, false, nil, []
