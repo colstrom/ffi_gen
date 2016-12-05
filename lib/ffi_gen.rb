@@ -449,8 +449,7 @@ class FFIGen
           else
             previous_field_end = Clang.get_range_end field_extent
           end
-
-          field_type = resolve_type Clang.get_cursor_type(child)
+          field_type = resolve_type Clang.get_cursor_type(child), false, field_name
           last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
           struct.fields << { name: field_name, type: field_type, comment: field_comment }
@@ -654,7 +653,7 @@ class FFIGen
     declaration
   end
 
-  def resolve_type(full_type, is_array = false)
+  def resolve_type(full_type, is_array = false, field_name = nil)
     canonical_type = Clang.get_canonical_type full_type
     data_array = case canonical_type[:kind]
     when :void, :bool, :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :s_char, :short, :int, :long, :long_long, :float, :double
@@ -670,6 +669,19 @@ class FFIGen
         when :record
           @declarations_by_type[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
         when :function_proto
+          if (@declarations_by_type[full_type].nil?)
+            function_proto = pointee_type
+            return_type = resolve_type Clang.get_result_type(function_proto)
+            parameters = []
+            Clang.get_num_arg_types(function_proto).times do |i|
+              param_type = resolve_type Clang.get_arg_type(function_proto, i)
+              #param_name = read_name(Clang.cursor_get_argument(function_proto, i))
+              param_name = param_type.name
+              param_name ||= Name.new ['arg', i.to_s]
+              parameters << { name:param_name, type: param_type, description: [] }
+            end
+            return FunctionOrCallback.new self, field_name, parameters, return_type, true, false, nil, []
+          end
           @declarations_by_type[full_type]
         else
           nil
