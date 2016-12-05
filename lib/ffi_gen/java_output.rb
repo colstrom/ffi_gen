@@ -185,7 +185,7 @@ class FFIGen
       if @is_callback
         writer.puts "public static interface #{java_jna_type.split('.').last} {"
         writer.indent do
-          jna_signature = "#{@parameters.map{ |parameter| "#{parameter[:type].java_jna_type} #{parameter[:name].to_java_downcase}" }.join(', ')}"
+          jna_signature = "#{@parameters.map{ |parameter| "#{parameter[:type].is_a?(StructOrUnion) ? 'jnr.ffi.Pointer' : parameter[:type].java_jna_type} #{parameter[:name].to_java_downcase}" }.join(', ')}"
           writer.puts "@Delegate"
           writer.puts "#{@return_type.java_jna_type} invoke(#{jna_signature});"
         end
