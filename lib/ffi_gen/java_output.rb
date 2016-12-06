@@ -168,7 +168,8 @@ class FFIGen
     end
     
     def java_jna_type
-      @written ? java_name : "jnr.ffi.Pointer"
+      #@written ? java_name : "jnr.ffi.Pointer"
+      java_name
     end
 
     def java_jnr_struct_type
@@ -385,7 +386,7 @@ class FFIGen
     end
     
     def java_jna_type
-      "jnr.ffi.Pointer"
+      "jnr.ffi.Pointer" 
     end
 
     def java_jnr_struct_type

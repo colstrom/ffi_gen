@@ -677,9 +677,9 @@ class FFIGen
               param_type = resolve_type Clang.get_arg_type(function_proto, i)
               #param_name = read_name(Clang.cursor_get_argument(function_proto, i))
               if i > 0
-                param_name = Name.new [param_type.name.parts.last, i.to_s]
+                param_name = Name.new param_type.name.parts + ["_#{i.to_s}"]
               else
-                param_name = Name.new [param_type.name.parts.last]
+                param_name = Name.new param_type.name.parts
               end
               #param_name ||= Name.new ['arg', i.to_s]
               parameters << { name:param_name, type: param_type, description: [] }
