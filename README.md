@@ -4,6 +4,12 @@
 *Contributors:* Jeremy Voorhis (thanks for the initial idea)
 *License:* MIT (see LICENSE)
 
+## Testing Loca chanes
+
+```
+gem build ffi_gen.gemspec
+sudo gem install ./ffi_gen-1.2.0.gem
+```
 
 ## Features
 

@@ -4,7 +4,7 @@ require 'ffi'
 
 module FFIGen::Clang
   extend FFI::Library
-  ffi_lib ["libclang-3.5.so.1", "libclang.so.1", "clang"]
+  ffi_lib ['clang-3.9', 'clang-3.5','clang', "libclang-3.5.so.1", "libclang.so.1"]
   
   def self.attach_function(name, *_)
     begin; super; rescue FFI::NotFoundError => e
